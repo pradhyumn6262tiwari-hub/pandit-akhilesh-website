@@ -1,0 +1,435 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pandit Ji - Admin Dashboard</title>
+
+    <style>
+:root {
+    --pj-ink: #17251f;
+    --pj-green: #263c30;
+    --pj-gold: #c99a45;
+    --pj-cream: #f7f5ee;
+    --pj-muted: #748078;
+    --pj-line: #e8e4da;
+    --pj-shadow: 0 18px 50px rgba(29, 43, 35, .08);
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0; min-height: 100vh; padding: 34px;
+    font-family: Inter, "Segoe UI", Arial, sans-serif; color: var(--pj-ink);
+    background: radial-gradient(circle at 8% 0%, rgba(201,154,69,.13), transparent 28rem),
+                linear-gradient(135deg, #faf8f2, #eff2ec);
+}
+.admin-container { width: min(1380px, 100%); margin: auto; }
+.admin-header {
+    position: relative; overflow: hidden; display: flex; align-items: center;
+    justify-content: space-between; gap: 22px; padding: 30px 34px;
+    margin-bottom: 26px; color: #fff; border: 1px solid #ffffff18;
+    border-radius: 22px; background: linear-gradient(115deg, #14251f, #263c30 62%, #4b3820);
+    box-shadow: 0 18px 38px #192b2129;
+}
+.admin-header::after {
+    content: "ॐ"; position: absolute; right: 20px; top: -42px;
+    color: #f3dfb31a; font-size: 185px; line-height: 1; pointer-events: none;
+}
+.admin-header h1 {
+    position: relative; z-index: 1; margin: 0 0 8px;
+    font-size: clamp(25px, 3vw, 35px); letter-spacing: -.8px; font-weight: 750;
+}
+.admin-header p { position: relative; z-index: 1; margin: 0; color: #d5dfd6; font-size: 14px; }
+.admin-header::before {
+    content: "ADMIN CONSOLE"; position: relative; z-index: 1; order: 2;
+    padding: 10px 14px; color: #f3dfb3; border: 1px solid #f3dfb359;
+    background: #ffffff0f; border-radius: 999px; font-size: 11px;
+    font-weight: 800; letter-spacing: 1.5px; white-space: nowrap;
+}
+.booking-card {
+    min-width: 0; padding: 28px; margin-bottom: 24px;
+    border: 1px solid #e8e4dae6; border-radius: 20px;
+    background: #fffffff2; box-shadow: var(--pj-shadow);
+}
+.booking-card h2 { margin: 0 0 8px; font-size: 22px; letter-spacing: -.35px; }
+.login-card { max-width: 470px; margin: 46px auto; padding: 36px; border-radius: 24px; }
+.login-card h2 { font-size: 27px; }
+.login-card h2::before {
+    content: "✦"; display: grid; place-items: center; width: 48px; height: 48px;
+    margin-bottom: 18px; border-radius: 15px; color: #49371c;
+    background: linear-gradient(135deg, #f5e3b9, #d5a64e); font-size: 25px;
+}
+.login-card form { margin-top: 24px; }
+.login-card label {
+    display: block; margin: 18px 0 8px; color: #34443b;
+    font-size: 13px; font-weight: 750;
+}
+.login-card input, select {
+    width: 100%; min-height: 46px; padding: 12px 14px; color: var(--pj-ink);
+    background: #fff; border: 1px solid #dedfd6; border-radius: 11px;
+    outline: none; font: inherit; transition: border-color .2s, box-shadow .2s;
+}
+.login-card input:focus, select:focus {
+    border-color: var(--pj-gold); box-shadow: 0 0 0 4px #c99a4526;
+}
+button {
+    min-height: 42px; padding: 11px 17px; border: 1px solid transparent;
+    border-radius: 10px; background: linear-gradient(135deg, #d4aa5a, #b9822c);
+    color: #1e271f; cursor: pointer; font: inherit; font-size: 13px; font-weight: 800;
+    box-shadow: 0 5px 12px #b9822c24; transition: transform .18s, box-shadow .18s;
+}
+button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 18px #b9822c38; }
+button:disabled { opacity: .6; cursor: not-allowed; box-shadow: none; }
+#loginButton { width: 100%; margin-top: 8px; min-height: 48px; font-size: 14px; }
+.secondary-button { color: #fff; background: #253a30; box-shadow: none; }
+.top-actions {
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: 10px; flex-wrap: wrap; margin-bottom: 22px;
+}
+#message, #loginMessage { margin-top: 14px; overflow-wrap: anywhere; font-size: 13px; color: var(--pj-muted); }
+#message:not(:empty) { padding: 10px 13px; border-radius: 9px; background: #f7f8f4; }
+.table-wrapper { overflow-x: auto; border: 1px solid var(--pj-line); border-radius: 14px; }
+table { width: 100%; min-width: 850px; border-collapse: separate; border-spacing: 0; margin: 0; font-size: 13px; }
+th, td { padding: 16px 15px; text-align: left; border-bottom: 1px solid #eeece5; white-space: nowrap; }
+th {
+    color: #536257; background: #f5f4ed; font-size: 11px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .7px;
+}
+th:first-child { border-top-left-radius: 13px; }
+th:last-child { border-top-right-radius: 13px; }
+tbody tr { transition: background .16s; }
+tbody tr:hover { background: #fbf8ef; }
+tbody tr:last-child td { border-bottom: 0; }
+td { color: #354239; }
+td select { min-width: 135px; min-height: 38px; padding: 8px 10px; font-size: 12px; }
+.hidden { display: none !important; }
+@media (max-width: 700px) {
+    body { padding: 15px; }
+    .admin-header { align-items: flex-start; padding: 23px; border-radius: 17px; }
+    .admin-header::before { display: none; }
+    .admin-header::after { right: -22px; top: -25px; font-size: 130px; }
+    .booking-card { padding: 18px; border-radius: 16px; }
+    .login-card { margin: 24px auto; padding: 25px; }
+    .top-actions { justify-content: stretch; }
+    .top-actions button { flex: 1; }
+    .admin-header h1 { font-size: 25px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+}
+</style>
+</head>
+
+<body>
+<div class="admin-container">
+
+    <header class="admin-header">
+        <h1>Pandit Ji Admin Dashboard</h1>
+        <p>Manage your puja bookings</p>
+    </header>
+
+    <!-- Admin Login -->
+    <section id="loginSection" class="booking-card login-card">
+        <h2>Welcome back</h2>
+        <p style="margin:0;color:#748078;font-size:14px;line-height:1.6;">Sign in to manage your puja bookings securely.</p>
+
+        <form id="loginForm">
+            <label for="username">Username</label>
+            <input
+                id="username"
+                name="username"
+                type="text"
+                autocomplete="username"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+            >
+
+            <p id="loginMessage" role="status"></p>
+
+            <button id="loginButton" type="submit">
+                Login
+            </button>
+        </form>
+    </section>
+
+    <!-- Dashboard: hidden until login succeeds -->
+    <section id="dashboardSection" class="hidden">
+        <div class="booking-card">
+            <div class="top-actions">
+                <button id="refreshButton" type="button">
+                    Refresh Bookings
+                </button>
+
+                <button id="logoutButton"
+                        class="secondary-button"
+                        type="button">
+                    Logout
+                </button>
+            </div>
+
+            <h2>Booking Management</h2>
+            <p style="margin:0 0 8px;color:#748078;font-size:14px;">Review customer requests and keep booking statuses up to date.</p>
+            <p id="message" role="status"></p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Mobile</th>
+                            <th>Puja</th>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody id="bookingTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    const apiUrl = "http://localhost:5233/api/Bookings";
+    const loginUrl = "http://localhost:5233/api/Auth/login";
+
+    const loginSection = document.getElementById("loginSection");
+    const dashboardSection = document.getElementById("dashboardSection");
+    const loginForm = document.getElementById("loginForm");
+    const loginButton = document.getElementById("loginButton");
+    const loginMessage = document.getElementById("loginMessage");
+    const tableBody = document.getElementById("bookingTableBody");
+    const message = document.getElementById("message");
+    const refreshButton = document.getElementById("refreshButton");
+    const logoutButton = document.getElementById("logoutButton");
+
+    let accessToken = sessionStorage.getItem("panditAdminToken");
+
+    function showLogin() {
+        accessToken = null;
+        sessionStorage.removeItem("panditAdminToken");
+
+        dashboardSection.classList.add("hidden");
+        loginSection.classList.remove("hidden");
+        tableBody.replaceChildren();
+        message.textContent = "";
+        loginForm.reset();
+    }
+
+    function showDashboard() {
+        loginSection.classList.add("hidden");
+        dashboardSection.classList.remove("hidden");
+    }
+
+    async function login(username, password) {
+        const response = await fetch(loginUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || !result.token) {
+            throw new Error(
+                result.message || "Login failed. Credentials check karo."
+            );
+        }
+
+        accessToken = result.token;
+        sessionStorage.setItem("panditAdminToken", accessToken);
+
+        return true;
+    }
+
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+
+        loginButton.disabled = true;
+        loginMessage.textContent = "Logging in...";
+
+        try {
+            await login(username, password);
+            loginForm.reset();
+            showDashboard();
+            await loadBookings();
+        } catch (error) {
+            console.error(error);
+            loginMessage.textContent =
+                error.message || "Login nahi hua. Backend check karo.";
+        } finally {
+            loginButton.disabled = false;
+        }
+    });
+
+    async function authorizedFetch(url, options = {}) {
+        if (!accessToken) {
+            throw new Error("Session expired. Dobara login karo.");
+        }
+
+        const headers = {
+            ...(options.headers || {}),
+            "Authorization": `Bearer ${accessToken}`
+        };
+
+        const response = await fetch(url, {
+            ...options,
+            headers
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            showLogin();
+            throw new Error("Session expired ya access denied. Dobara login karo.");
+        }
+
+        return response;
+    }
+
+    async function loadBookings() {
+        message.textContent = "Loading bookings...";
+        tableBody.replaceChildren();
+        refreshButton.disabled = true;
+
+        try {
+            const response = await authorizedFetch(apiUrl);
+
+            if (!response.ok) {
+                throw new Error("Bookings load nahi hui.");
+            }
+
+            const bookings = await response.json();
+
+            if (!Array.isArray(bookings) || bookings.length === 0) {
+                message.textContent = "No bookings found.";
+                return;
+            }
+
+            bookings.forEach(booking => {
+                const row = document.createElement("tr");
+
+                const bookingDate = booking.bookingDate
+                    ? booking.bookingDate.substring(0, 10)
+                    : "-";
+
+                const values = [
+                    booking.id,
+                    booking.customerName,
+                    booking.phone,
+                    booking.pujaName,
+                    bookingDate,
+                    booking.location
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value ?? "-";
+                    row.appendChild(cell);
+                });
+
+                const statusCell = document.createElement("td");
+                const select = document.createElement("select");
+
+                ["Pending", "Confirmed", "Completed", "Cancelled"]
+                    .forEach(status => {
+                        const option = document.createElement("option");
+                        option.value = status;
+                        option.textContent = status;
+                        select.appendChild(option);
+                    });
+
+                select.value = booking.status || "Pending";
+                select.dataset.bookingId = booking.id;
+
+                select.addEventListener("change", async function () {
+                    const bookingId = this.dataset.bookingId;
+                    const newStatus = this.value;
+                    this.disabled = true;
+                    message.textContent = "Updating booking status...";
+
+                    try {
+                        const response = await authorizedFetch(
+                            `${apiUrl}/${bookingId}/status`,
+                            {
+                                method: "PATCH",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({ status: newStatus })
+                            }
+                        );
+
+                        const result = await response.json().catch(() => ({}));
+
+                        if (!response.ok) {
+                            throw new Error(
+                                result.message || "Status update failed."
+                            );
+                        }
+
+                        message.textContent =
+                            `Booking #${bookingId} status updated to ${newStatus}.`;
+                    } catch (error) {
+                        console.error(error);
+                        message.textContent =
+                            error.message || "Status update nahi hua.";
+
+                        if (accessToken) {
+                            await loadBookings();
+                        }
+                    } finally {
+                        this.disabled = false;
+                    }
+                });
+
+                statusCell.appendChild(select);
+                row.appendChild(statusCell);
+                tableBody.appendChild(row);
+            });
+
+            message.textContent = "Total bookings: " + bookings.length;
+
+        } catch (error) {
+            console.error(error);
+
+            if (accessToken) {
+                message.textContent =
+                    error.message || "Backend aur API URL check karo.";
+            }
+        } finally {
+            refreshButton.disabled = false;
+        }
+    }
+
+    refreshButton.addEventListener("click", loadBookings);
+
+    logoutButton.addEventListener("click", function () {
+        showLogin();
+        loginMessage.textContent = "You have logged out.";
+    });
+
+    // Restore the dashboard after a page refresh if a token exists.
+    if (accessToken) {
+        showDashboard();
+        loadBookings();
+    } else {
+        showLogin();
+    }
+</script>
+</body>
+</html>

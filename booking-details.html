@@ -1,0 +1,299 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details | Pandit Ji</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f5f7f2;
+            color: #26352b;
+        }
+
+        .booking-details-container {
+            max-width: 650px;
+            margin: 30px auto;
+            padding: 28px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-heading {
+            text-align: center;
+            color: #176b45;
+            margin-top: 0;
+        }
+
+        .page-description {
+            text-align: center;
+            color: #68746c;
+            line-height: 1.6;
+        }
+
+        .booking-lookup-form {
+            margin-top: 24px;
+        }
+
+        .booking-lookup-form label {
+            display: block;
+            margin: 15px 0 7px;
+            font-weight: 600;
+        }
+
+        .booking-lookup-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d5ddd6;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .primary-button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px;
+            background: #176b45;
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .primary-button:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+
+        .booking-error {
+            margin-top: 15px;
+            color: #b42318;
+        }
+
+        .booking-result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f5faf6;
+            border: 1px solid #d5e8da;
+            border-radius: 12px;
+        }
+
+        .booking-result h2 {
+            color: #176b45;
+            margin-top: 0;
+        }
+
+        .detail-row {
+            padding: 12px 0;
+            border-bottom: 1px solid #e1e9e2;
+            overflow-wrap: anywhere;
+        }
+
+        .detail-label {
+            font-weight: bold;
+        }
+
+        .status-value {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #fff0c2;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #176b45;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="booking-details-container">
+        <h1 class="page-heading">🙏 Booking Details</h1>
+
+        <p class="page-description">
+            Apni booking ki details dekhne ke liye
+            apna registered mobile number enter karein.
+        </p>
+
+        <form id="bookingLookupForm" class="booking-lookup-form">
+            <label for="bookingId">Booking ID</label>
+            <input
+                type="number"
+                id="bookingId"
+                min="1"
+                required
+                placeholder="Enter booking ID">
+
+            <label for="customerPhone">Registered Mobile Number</label>
+            <input
+                type="tel"
+                id="customerPhone"
+                required
+                maxlength="15"
+                autocomplete="tel"
+                placeholder="Enter mobile number">
+
+            <button type="submit" id="lookupButton" class="primary-button">
+                Check Booking Details
+            </button>
+        </form>
+
+        <p id="lookupError" class="booking-error" role="alert" hidden></p>
+
+        <section id="bookingResult" class="booking-result" hidden>
+            <h2>Booking Information</h2>
+
+            <div class="detail-row">
+                <span class="detail-label">Booking ID:</span>
+                <span id="detailId"></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Customer Name:</span>
+                <span id="detailName"></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Puja:</span>
+                <span id="detailPuja"></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Booking Date:</span>
+                <span id="detailDate"></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Location:</span>
+                <span id="detailLocation"></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Message:</span>
+                <span id="detailMessage"></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Current Status:</span>
+                <span id="detailStatus" class="status-value"></span>
+            </div>
+
+            <p id="detailCreatedAt"></p>
+        </section>
+
+        <a class="back-link" href="index.html">← Back to Website</a>
+    </main>
+
+    <script>
+        const lookupApiUrl = "http://localhost:5233/api/Bookings/lookup";
+
+        const params = new URLSearchParams(window.location.search);
+        const bookingIdFromUrl = params.get("bookingId");
+
+        if (bookingIdFromUrl && /^\d+$/.test(bookingIdFromUrl)) {
+            document.getElementById("bookingId").value = bookingIdFromUrl;
+        }
+
+        const lookupForm = document.getElementById("bookingLookupForm");
+        const lookupError = document.getElementById("lookupError");
+        const lookupButton = document.getElementById("lookupButton");
+        const bookingResult = document.getElementById("bookingResult");
+
+        function setText(id, value) {
+            document.getElementById(id).textContent =
+                value == null || value === "" ? "Not provided" : value;
+        }
+
+        lookupForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            lookupError.hidden = true;
+            bookingResult.hidden = true;
+            lookupButton.disabled = true;
+            lookupButton.textContent = "Checking...";
+
+            const bookingId = Number(
+                document.getElementById("bookingId").value
+            );
+
+            const phone = document.getElementById("customerPhone").value.trim();
+
+            try {
+                const response = await fetch(lookupApiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        bookingId: bookingId,
+                        phone: phone
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success || !result.booking) {
+                    throw new Error(
+                        result.message || "Booking details nahi mil payi."
+                    );
+                }
+
+                const booking = result.booking;
+
+                setText("detailId", booking.id);
+                setText("detailName", booking.customerName);
+                setText("detailPuja", booking.pujaName);
+                setText(
+                    "detailDate",
+                    booking.bookingDate
+                        ? new Date(booking.bookingDate).toLocaleDateString("en-IN")
+                        : "Not provided"
+                );
+                setText("detailLocation", booking.location);
+                setText("detailMessage", booking.message);
+                setText("detailStatus", booking.status);
+
+                setText(
+                    "detailCreatedAt",
+                    "Request received: " +
+                    (booking.createdAt
+                        ? new Date(booking.createdAt).toLocaleString("en-IN")
+                        : "Not available")
+                );
+
+                bookingResult.hidden = false;
+
+            } catch (error) {
+                lookupError.textContent =
+                    error.message ||
+                    "Server se connect nahi ho paya. Please try again.";
+
+                lookupError.hidden = false;
+
+            } finally {
+                lookupButton.disabled = false;
+                lookupButton.textContent = "Check Booking Details";
+            }
+        });
+    </script>
+</body>
+</html>

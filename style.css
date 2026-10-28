@@ -742,3 +742,25 @@ font-size:32px;
         object-fit:cover;
         border-radius:15px;
     }
+    .booking-success {
+    margin-top: 20px;
+    padding: 22px;
+    border: 1px solid #b8d8c5;
+    border-radius: 14px;
+    background: #f0faf3;
+    color: #214c35;
+}
+
+.booking-success h3 {
+    margin-top: 0;
+}
+
+#viewBookingDetails {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #176b45;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}

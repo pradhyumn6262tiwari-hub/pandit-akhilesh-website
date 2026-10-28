@@ -56,6 +56,7 @@
                 <li><a href="#services">Services</a></li>
 
                 <li><a href="#contact">Contact</a></li>
+                <li><a href="booking-details.html">View Booking Details</a></li>
 
             </ul>
 
@@ -260,7 +261,7 @@
 
     </div>
 
-    <form>
+    <!-- <form>
 
         <input type="text" placeholder="Your Name">
 
@@ -292,8 +293,83 @@
 
         </button>
 
-    </form>
+    </form> -->
+    
+<form id="bookingForm">
+      <label for="customerName">Enter your Name</label>
+    <input
+        type="text"
+        id="customerName"
+        name="customerName"
+        placeholder="Your Name"
+        required
+    >
+     <label for="phone">Enter your mobile Number</label>
+    <input
+        type="tel"
+        id="phone"
+        name="phone"
+        placeholder="Mobile Number"
+        pattern="[0-9]{10}"
+        maxlength="10"
+        required
+    >
+     <label for="bookingDate">Enter your puja booking date</label>
+    <input
+        type="date"
+        id="bookingDate"
+        name="bookingDate"
+        required
+    >
+     <label for="pujaName"> please select your puja</label>
+    <select id="pujaName" name="pujaName" required>
+        <option value="">Select Puja</option>
+        <option value="मंगल दोष निवारण">मंगल दोष निवारण</option>
+        <option value="कालसर्प दोष">कालसर्प दोष</option>
+        <option value="ग्रह शांति">ग्रह शांति</option>
+        <option value="कुंडली विश्लेषण">कुंडली विश्लेषण</option>
+        <option value="विवाह पूजन">विवाह पूजन</option>
+    </select>
+     
+    <label for="location">please Enter your location</label>
+    <input
+        type="text"
+        id="location"
+        name="location"
+        placeholder="Your City / Location"
+        required
+    >
 
+    <textarea
+        id="message"
+        name="message"
+        rows="5"
+        placeholder="Message (Optional)"
+    ></textarea>
+<p id="bookingResponse" role="status" aria-live="polite"></p>
+    <button type="submit" class="btn" id="bookingSubmit">
+        Book Now
+    </button>
+
+
+</form>
+
+<div id="bookingSuccess" class="booking-success" hidden>
+    <h3>🙏 Booking Request Submitted!</h3>
+
+    <p>
+        Aapki booking request successfully submit ho gayi hai.
+        Apni booking ki aage ki jankari dekhne ke liye neeche click karein.
+    </p>
+
+    <p>
+        Booking ID: <strong id="successBookingId"></strong>
+    </p>
+
+    <button type="button" id="viewBookingDetails">
+        View Booking Details
+    </button>
+</div>
 </section>
 
 
