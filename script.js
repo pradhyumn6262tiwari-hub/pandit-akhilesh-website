@@ -234,7 +234,7 @@ if (bookingForm) {
         };
 
         // Local backend API
-        const apiUrl = "http://localhost:5233/api/Bookings";
+        const apiUrl = "https://panditji-api.runasp.net/api/Bookings";
 
         submitButton.disabled = true;
         submitButton.textContent = "Booking...";
